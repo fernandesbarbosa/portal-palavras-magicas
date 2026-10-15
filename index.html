@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Portal Palavras Mágicas</title>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#e9d5fb;--side:#f1e3fc;--panel:#d9c6ff;--card:#fff;--ink:#2c1250;--mute:#6b5a85;--brand:#8b3fc7;--deep:#2e0a4f;--cream:#fff1b8;--cream-ink:#4a3a10;--feed:#a99bd1;--star:#f2b705;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root[data-theme="auto"]{--bg:#2a1647;--side:#38205c;--panel:#46297a;--card:#3e2766;--ink:#f3e9ff;--mute:#c4b0e3;--cream:#5a4a1c;--cream-ink:#fff1b8;--feed:#4b3a7c}}
+:root[data-theme="dark"]{--bg:#2a1647;--side:#38205c;--panel:#46297a;--card:#3e2766;--ink:#f3e9ff;--mute:#c4b0e3;--cream:#5a4a1c;--cream-ink:#fff1b8;--feed:#4b3a7c}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:Lora,Georgia,serif;line-height:1.5}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+button:focus-visible,input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.splash{position:fixed;inset:0;z-index:50;background:var(--deep);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;text-align:center;padding:2rem;transition:opacity .7s,visibility .7s}
+.splash.off{opacity:0;visibility:hidden}
+.splash h1{font:600 clamp(2.4rem,7vw,4.5rem)/1.1 "Dancing Script",cursive;color:#e8d0ff;margin:0}
+.splash p{font:600 clamp(1.2rem,3vw,1.8rem) "Dancing Script",cursive;color:#a45be0;margin:0}
+.sun{width:130px;height:130px;animation:spin 40s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.sun{animation:none}.splash{transition:none}}
+.splash .go{background:#e8d0ff;color:var(--deep);border-radius:999px;padding:.7rem 2.5rem;margin-top:1rem}
+.app{display:grid;grid-template-columns:200px 1fr 280px;height:100%}
+.side{background:var(--side);padding:1.2rem .8rem;display:flex;flex-direction:column;gap:.4rem}
+.logo{width:56px;height:56px;border-radius:12px;background:var(--deep);display:grid;place-items:center;font-size:1.6rem;margin-bottom:1rem}
+.nav{display:flex;align-items:center;gap:.7rem;padding:.7rem .8rem;border-radius:12px;text-align:left;width:100%}
+.nav[aria-current="page"]{background:#fff;color:#2c1250}
+.nav .i{font-size:1.3rem;width:1.6rem;text-align:center}
+.spacer{flex:1}
+.main{overflow-y:auto;padding:1.2rem 1.5rem 2rem}
+.top{display:flex;gap:.8rem;align-items:center;margin-bottom:1rem}
+.search{flex:1;max-width:420px;display:flex;align-items:center;gap:.5rem;background:#fff;color:#2c1250;border-radius:999px;padding:.4rem 1rem}
+.search input{border:0;background:none;flex:1;font:inherit;color:inherit;min-width:0}
+.btn{background:var(--cream);color:var(--cream-ink);border-radius:999px;padding:.45rem 1.2rem;font-weight:600}
+.banner{height:150px;border-radius:30px;margin-bottom:1rem;position:relative;overflow:hidden;background:
+repeating-linear-gradient(90deg,#3a1d12 0 14px,#5b2f1a 14px 22px,#2a140d 22px 34px,#7a4a22 34px 40px),#3a1d12}
+.banner::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 60% 55%,rgba(255,190,90,.55),transparent 35%),linear-gradient(transparent 40%,rgba(20,5,30,.7))}
+.tag{position:absolute;left:18px;bottom:14px;z-index:2;background:var(--brand);color:#fff;border-radius:999px;padding:.1rem .8rem;font-size:.85rem}
+.chips{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem}
+.chip{border-radius:999px;padding:.15rem .9rem;background:var(--cream);color:var(--cream-ink);font-size:.9rem}
+.chip[aria-pressed="true"]{background:var(--brand);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem}
+.card{background:var(--card);border-radius:22px;padding:.9rem;display:flex;gap:.8rem;align-items:flex-start}
+.cover{flex:none;width:78px;height:114px;border-radius:6px;display:flex;align-items:flex-end;padding:5px;font-size:.62rem;font-weight:600;line-height:1.1;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6);box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.info{flex:1;min-width:0;font-size:.85rem}
+.info b{display:block;font-size:.95rem;line-height:1.25}
+.info small{color:var(--mute)}
+.reg{margin-top:.4rem;font-size:.82rem;color:var(--brand);text-decoration:underline}
+.reg[aria-pressed="true"]{color:var(--mute);text-decoration:none}
+.stars button{font-size:1.15rem;color:#c9bfd9;padding:0 1px}
+.stars button.on{color:var(--star)}
+.right{background:var(--panel);margin:1rem 1rem 1rem 0;border-radius:40px;padding:1.5rem 1.2rem;overflow-y:auto}
+.avatar{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font-size:1.5rem;flex:none}
+.right .me{text-align:center}.right .me .avatar{margin:0 auto .3rem;width:64px;height:64px}
+.post{border-radius:14px;min-height:110px;margin-bottom:.8rem;padding:.7rem;display:flex;align-items:flex-end;color:#fff;font-size:.85rem}
+.view{display:none}.view.on{display:block}
+.stories{display:flex;gap:.7rem;overflow-x:auto;background:rgba(255,255,255,.3);border-radius:999px;padding:.6rem;margin-bottom:1rem}
+.stories .avatar{width:48px;height:48px}
+.masonry{columns:3 200px;column-gap:1rem}
+.tile{break-inside:avoid;margin-bottom:1rem;border-radius:10px;overflow:hidden;background:var(--card)}
+.tile .art{padding:1rem;min-height:140px;display:flex;align-items:center;justify-content:center;text-align:center;color:#fff;font-weight:600}
+.tile .row{display:flex;align-items:center;justify-content:space-between;padding:.4rem .6rem;font-size:.85rem}
+.like[aria-pressed="true"]{color:#d6246e}
+.plist{display:grid;gap:.8rem;max-width:560px}
+.track{display:flex;align-items:center;gap:.8rem;background:var(--cream);color:var(--cream-ink);border-radius:18px;padding:.7rem}
+.track .cover{width:48px;height:48px;border-radius:8px}
+.track .play{margin-left:auto;font-size:1.4rem}
+h2{font-size:1.2rem;margin:.2rem 0 1rem}
+.empty{color:var(--mute);padding:1rem 0}
+.bottom{display:none}
+@media (max-width:860px){
+.app{display:block}.side,.right{display:none}
+.main{height:100%;padding-bottom:5.5rem}
+.bottom{display:flex;position:fixed;left:0;right:0;bottom:0;background:var(--side);justify-content:space-around;padding:.5rem .5rem calc(.5rem + env(safe-area-inset-bottom,0px))}
+.bottom .nav{flex-direction:column;gap:0;width:auto;padding:.3rem .8rem;font-size:.75rem}
+.card{background:var(--cream);color:var(--cream-ink)}.info small{color:inherit;opacity:.7}
+}
+.feed{max-width:560px;margin:0 auto;display:grid;gap:1.2rem}
+.pcard{background:var(--card);border-radius:22px;overflow:hidden;padding-bottom:.6rem}
+.phd{display:flex;gap:.7rem;align-items:center;padding:.8rem 1rem}.phd small{color:var(--mute)}
+.pimg{aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;text-align:center;padding:1.5rem;color:#fff;font-weight:600;font-size:1.5rem;line-height:1.2;text-shadow:0 2px 6px rgba(0,0,0,.5)}
+.pimg small{display:block;font-size:.85rem;font-weight:400;opacity:.9}
+.pact{display:flex;gap:.5rem;align-items:center;padding:.5rem 1rem 0}.pact .like{font-size:1.5rem}
+.ptxt,.cms{padding:0 1rem;margin:.3rem 0}.cms{list-style:none;font-size:.9rem;color:var(--mute)}.cms b{color:var(--ink)}
+.cin{display:flex;gap:.5rem;padding:.4rem 1rem 0}.cin input{flex:1;min-width:0;border:1px solid var(--panel);border-radius:999px;padding:.4rem .9rem;font:inherit;background:var(--bg);color:var(--ink)}
+.phead{height:150px;border-radius:24px;background:linear-gradient(120deg,#6a2fb0,#a45be0,#e8a24a)}
+.pbar{display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap;margin:-44px 1rem 0}.pbar .avatar{border:4px solid var(--bg)}.pn{flex:1;min-width:140px}.pn h2{margin:0}.bio{max-width:60ch}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.6rem}
+.tl{aspect-ratio:1;border-radius:12px;display:flex;align-items:flex-end;padding:.5rem;color:#fff;font-size:.8rem;font-weight:600;text-shadow:0 1px 4px rgba(0,0,0,.6)}
+dialog{border:0;border-radius:22px;background:var(--card);color:var(--ink);padding:1.2rem;width:min(92vw,420px)}dialog::backdrop{background:rgba(30,5,50,.6)}
+dialog label{display:block;margin:.6rem 0;font-size:.9rem}
+dialog input,dialog select,dialog textarea{display:block;width:100%;margin-top:.25rem;padding:.45rem .7rem;border:1px solid var(--panel);border-radius:12px;font:inherit;background:var(--bg);color:var(--ink)}
+.dact{display:flex;gap:.6rem;justify-content:flex-end;margin-top:1rem}.pub{background:var(--brand);color:#fff}
+.i svg,.play svg,.like svg,.search span svg,.logo svg{width:22px;height:22px;display:block}
+.play svg{width:26px;height:26px}.like svg{width:24px;height:24px}.logo{color:#e8d0ff}.logo svg{width:30px;height:30px}.search span{display:flex}.track .cover svg{width:24px;height:24px}
+.themes{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:.8rem;max-width:640px}
+.sw{border-radius:16px;padding:.5rem;background:var(--card);text-align:center;border:2px solid transparent}.sw[aria-pressed='true']{border-color:var(--brand)}.sw i{display:block;height:44px;border-radius:10px;margin-bottom:.35rem}
+:root[data-theme='clean']{--bg:#f6f6f7;--side:#fff;--panel:#ececee;--card:#fff;--ink:#1c1c1e;--mute:#707076;--brand:#1c1c1e;--deep:#111;--cream:#ececee;--cream-ink:#1c1c1e;--star:#e0a800}
+:root[data-theme='girlie']{--bg:#ffe3ef;--side:#ffd0e4;--panel:#ffbcd9;--card:#fff;--ink:#4a1230;--mute:#94597a;--brand:#e6428b;--deep:#7a1f4d;--cream:#fff0f7;--cream-ink:#7a1f4d;--star:#ff9f1c}
+:root[data-theme='floresta']{--bg:#e2efe3;--side:#d3e6d5;--panel:#bcd9c0;--card:#fff;--ink:#16301e;--mute:#55705c;--brand:#2f7a4a;--deep:#0f2e1b;--cream:#f3efc4;--cream-ink:#3b3a12}
+:root[data-theme='oceano']{--bg:#def0fb;--side:#cde6f6;--panel:#b4d8f0;--card:#fff;--ink:#0f2a44;--mute:#54728d;--brand:#1f78c1;--deep:#0b2a4a;--cream:#fff4c8;--cream-ink:#4a3d10}
+:root[data-theme='cafe']{--bg:#efe3d3;--side:#e5d4bf;--panel:#d8c1a5;--card:#fffaf3;--ink:#3b2616;--mute:#7d6650;--brand:#8a5a34;--deep:#2e1c10;--cream:#f6e2b8;--cream-ink:#4a3410}
+.qb{background:linear-gradient(120deg,var(--brand),var(--deep));height:auto;min-height:150px;display:flex;align-items:center;padding:1.3rem 3.6rem 1.3rem 1.8rem}
+.qb::after{display:none}
+.qb::before{content:'\201C';position:absolute;left:14px;top:-10px;font:5.5rem/1 Georgia,serif;color:rgba(255,255,255,.18)}
+.qb blockquote{margin:0;color:#fff;transition:opacity .3s}
+.qb p{margin:0;font-size:clamp(1.05rem,2.2vw,1.45rem);font-style:italic;line-height:1.35}
+.qb cite{display:block;margin-top:.6rem;font-style:normal;font-size:.85rem;opacity:.8}
+.qn{position:absolute;right:14px;bottom:12px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.18);color:#fff;display:grid;place-items:center}.qn svg{width:18px;height:18px}
+@media (prefers-reduced-motion:reduce){.qb blockquote{transition:none}}
+</style>
+</head>
+<body>
+
+<div class="splash" id="splash" role="dialog" aria-label="Boas-vindas">
+ <svg class="sun" viewBox="0 0 100 100" aria-hidden="true"><g stroke="#a45be0" stroke-width="2">
+ <path d="M50 4v12M50 84v12M4 50h12M84 50h12M17 17l8 8M75 75l8 8M83 17l-8 8M25 75l-8 8"/></g>
+ <circle cx="50" cy="50" r="26" fill="#6a2fb0"/><path d="M50 26a24 24 0 0 0 0 48a16 24 0 0 1 0-48z" fill="#e8d0ff"/></svg>
+ <h1>Portal Palavras Mágicas</h1>
+ <p>Abra a porta para novos mundos</p>
+ <button class="go" id="enter">Entrar</button>
+</div>
+
+<div class="app">
+ <aside class="side">
+  <div class="logo" aria-hidden="true">🔮</div>
+  <nav aria-label="Principal" style="display:contents" id="sidenav"></nav>
+  <div class="spacer"></div>
+  <button class="nav" id="theme"><span class="i">🌙</span>Tema</button>
+ </aside>
+
+ <main class="main">
+  <div class="top">
+   <label class="search"><span aria-hidden="true">🔍</span><input id="q" type="search" placeholder="Pesquisar livro ou autor" aria-label="Pesquisar"></label>
+   <button class="btn" id="add">Adicionar livro</button>
+  </div>
+
+  <section class="view" id="v-books" aria-label="Livros">
+   <div class="banner qb"><blockquote id="qt"></blockquote><button class="qn" id="qnext" aria-label="Próxima frase"></button></div>
+   <div class="chips" id="chips"></div>
+   <div class="grid" id="books"></div>
+   <p class="empty" id="none" hidden>Nenhum livro encontrado. Tente outro nome ou adicione o livro.</p>
+  </section>
+
+  <section class="view on" id="v-home" aria-label="Início"><div class="stories" id="stories"></div><div class="feed" id="feed"></div></section>
+
+  <section class="view" id="v-play" aria-label="Playlist">
+   <h2>Playlist de leitura</h2>
+   <p class="empty">Sons ambiente criados no próprio navegador. Para ouvir suas músicas, adicione um arquivo de áudio seu.</p>
+   <div class="plist" id="tracks"></div>
+   <button class="btn" id="addmusic" style="margin-top:1rem">Adicionar minha música</button>
+   <input type="file" id="musicfile" accept="audio/*" hidden>
+   <input type="file" id="cvfile" accept="image/*" hidden>
+  </section>
+
+  <section class="view" id="v-minhas" aria-label="Estante">
+   <h2>Meus livros</h2>
+   <div class="grid" id="mine"></div>
+   <p class="empty" id="mine-none">Você ainda não registrou nenhuma leitura. Toque em “Registrar sua leitura” na tela inicial.</p>
+  </section>
+
+  <section class="view" id="v-feed" aria-label="Perfil">
+   
+   <div id="profile"></div>
+  </section>
+
+  <section class="view" id="v-conf" aria-label="Configurações">
+   <h2>Configurações</h2>
+   <h3>Tema</h3><div id="themes" class="themes" aria-label="Escolha o tema"></div>
+  </section>
+ </main>
+
+ <aside class="right" aria-label="Seu perfil">
+  <div class="me"><div class="avatar" style="background:#6a4a3a">📖</div><div>@seu.nome</div></div>
+  <p style="margin-top:1.2rem">Seus posts</p>
+  <div id="myposts"></div>
+ </aside>
+</div>
+<nav class="bottom" id="bottomnav" aria-label="Principal"></nav>
+<dialog id="dlg" aria-label="Novo post"><h2>Novo post</h2>
+<label>Livro<select id="pb"></select></label>
+<label>O que você está lendo?<textarea id="pt" rows="3" maxlength="280" placeholder="Conte como está a leitura"></textarea></label>
+<label>Imagem (opcional)<input type="file" id="pi" accept="image/*"></label>
+<div class="dact"><button class="btn" id="pc">Cancelar</button><button class="btn pub" id="pp">Publicar</button></div></dialog>
+<dialog id="dlg2" aria-label="Editar perfil"><h2>Editar perfil</h2>
+<label>Nome<input id="en" maxlength="40"></label><label>Usuário<input id="eu" maxlength="30"></label>
+<label>Bio<textarea id="eb" rows="3" maxlength="160"></textarea></label>
+<label>Foto de perfil<input type="file" id="ea" accept="image/*"></label><label>Imagem de capa<input type="file" id="eh" accept="image/*"></label>
+<div class="dact"><button class="btn" id="ec">Cancelar</button><button class="btn pub" id="es">Salvar</button></div></dialog>
+
+<script>
+var C=['#3b5a7a','#1f3b73','#c28a2c','#c9708b','#d9a0a0','#3c7a5a','#6a3fa0','#b34a3a'];
+var books=[
+{t:'É Assim que Acaba',a:'Colleen Hoover',g:'Romance',k:['#f4a6b8','#7a2e5a']},
+{t:'Verity',a:'Colleen Hoover',g:'Thriller',k:['#1b1b2f','#8a1c2b']},
+{t:'A Corte de Espinhos e Rosas',a:'Sarah J. Maas',g:'Fantasia',k:['#2d5a3d','#c23b5a']},
+{t:'Quarta Asa',a:'Rebecca Yarros',g:'Fantasia',k:['#1a1a1a','#b8862b']},
+{t:'A Canção de Aquiles',a:'Madeline Miller',g:'Fantasia',k:['#e8a24a','#2a4a7a']},
+{t:'Os Sete Maridos de Evelyn Hugo',a:'Taylor Jenkins Reid',g:'Contemporâneo',k:['#d4a017','#1f3a3a']},
+{t:'A Biblioteca da Meia-Noite',a:'Matt Haig',g:'Contemporâneo',k:['#14204a','#5a7ad0']},
+{t:'Daisy Jones & The Six',a:'Taylor Jenkins Reid',g:'Contemporâneo',k:['#e87a2c','#6a1f5a']},
+{t:'A Seleção',a:'Kiera Cass',g:'Romance',k:['#e8b4c8','#9a2a5a']},
+{t:'Heartstopper',a:'Alice Oseman',g:'Romance',k:['#7ac0e8','#2a4a9a']},
+{t:'Táticas do Amor',a:'Sarah Adams',g:'Romance',k:['#7fc47a','#2a6a3a']},
+{t:'O Pequeno Príncipe',a:'Antoine de Saint-Exupéry',g:'Clássicos',k:['#f2d47a','#3a6ab0']}
+];
+books.forEach(function(b){b.read=false;b.stars=0});
+var tracksOld=[['Trilha para ler à noite','🌙'],['Chuva e café','☕'],['Biblioteca antiga','📚'],['Romance de época','🕯️']];
+var posts=[['Off to the bookshop',2],['august.',5],['Mar de Monstros',1],['Folhas e páginas',7],['Eu odeio você. Quanta paixão.',3],['Pilha de leituras',6]];
+var views=[['home','Início','🏠'],['play','Playlist','🎵'],['books','Livros','📘'],['feed','Perfil','👤'],['conf','Config','⚙️']];
+var cat='Tudo',query='';
+function $(i){return document.getElementById(i)}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+
+function nav(){
+ var h=views.map(function(v){return '<button class="nav" data-v="'+v[0]+'"><span class="i" aria-hidden="true">'+v[2]+'</span>'+v[1]+'</button>'}).join('');
+ $('sidenav').innerHTML=h;$('bottomnav').innerHTML=views.slice(0,5).map(function(v){return '<button class="nav" data-v="'+v[0]+'"><span class="i" aria-hidden="true">'+v[2]+'</span>'+v[1]+'</button>'}).join('');
+}
+function show(v){
+ document.querySelectorAll('.view').forEach(function(e){e.classList.toggle('on',e.id==='v-'+v)});
+ document.querySelectorAll('.nav[data-v]').forEach(function(b){if(b.dataset.v===v)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
+ $('add').style.display=(v==='conf'||v==='play')?'none':'';$('add').textContent=v==='books'?'Adicionar livro':'Novo post';curView=v;
+}
+function cats(){
+ var list=['Tudo'].concat(books.map(function(b){return b.g}).filter(function(x,i,a){return a.indexOf(x)===i}));
+ $('chips').innerHTML=list.map(function(c){return '<button class="chip" aria-pressed="'+(c===cat)+'" data-c="'+esc(c)+'">'+esc(c)+'</button>'}).join('');
+}
+function card(b,i,withStars){
+ var s='';
+ if(withStars){s='<div class="stars" aria-label="Avaliação">';for(var k=1;k<=5;k++)s+='<button class="'+(k<=b.stars?'on':'')+'" data-r="'+i+'-'+k+'" aria-label="'+k+' estrelas">★</button>';s+='</div>'}
+ return '<article class="card"><div class="cover" style="'+(b.img?'background:url('+b.img+') center/cover':'background:linear-gradient(160deg,'+b.k[0]+','+b.k[1]+')')+'">'+(b.img?'':'<span>'+esc(b.t)+'<br><small style="font-weight:400;opacity:.85">'+esc(b.a)+'</small></span>')+'</div><div class="info"><b>'+esc(b.t)+'</b><small>'+esc(b.a)+' · '+esc(b.g)+'</small>'+
+ (withStars?s:'<button class="reg" data-reg="'+i+'" aria-pressed="'+b.read+'">'+(b.read?'Leitura registrada':'Registrar sua leitura')+'</button>')+'<br><button class="reg" data-cv="'+i+'">Trocar capa</button></div></article>';
+}
+function render(){
+ cats();
+ var q=query.toLowerCase(),n=0,h='';
+ books.forEach(function(b,i){
+  if((cat==='Tudo'||b.g===cat)&&(b.t+' '+b.a).toLowerCase().indexOf(q)>-1){h+=card(b,i,false);n++}
+ });
+ $('books').innerHTML=h;$('none').hidden=n>0;
+ var m='',k=0;books.forEach(function(b,i){if(b.read){m+=card(b,i,true);k++}});
+ $('mine').innerHTML=m;$('mine-none').hidden=k>0;
+}
+function once(){
+ renderTracks();var _unused=tracksOld.map(function(t,i){return '<div class="track"><div class="cover" style="background:'+C[i+2]+';font-size:1.4rem;align-items:center;justify-content:center">'+t[1]+'</div><b>'+esc(t[0])+'</b><button class="play" data-p="'+i+'" aria-label="Tocar '+esc(t[0])+'" aria-pressed="false">▶</button></div>'}).join('');
+ $('stories').innerHTML=['📚','🎧','🌸','🕯️','🦉','✨','📖','🌙'].map(function(e,i){return '<div class="avatar" style="background:'+C[i]+'">'+e+'</div>'}).join('');
+ $('masonry').innerHTML=posts.map(function(p,i){return '<div class="tile"><div class="art" style="background:'+C[p[1]]+';min-height:'+(120+(i%3)*50)+'px">'+esc(p[0])+'</div><div class="row"><span aria-hidden="true">📖</span><button class="like" aria-pressed="false" aria-label="Curtir">♡</button></div></div>'}).join('');
+ $('myposts').innerHTML=posts.slice(0,2).map(function(p){return '<div class="post" style="background:'+C[p[1]]+'">'+esc(p[0])+'</div>'}).join('');
+}
+document.addEventListener('click',function(e){
+ var t=e.target.closest('button');if(!t)return;
+ if(t.dataset.v)show(t.dataset.v);
+ else if(t.dataset.c){cat=t.dataset.c;render()}
+ else if(t.dataset.reg){var b=books[t.dataset.reg];b.read=!b.read;if(!b.read)b.stars=0;render()}
+ else if(t.dataset.r){var p=t.dataset.r.split('-');books[p[0]].stars=+p[1];render()}
+ else if(t.dataset.th){setTheme(t.dataset.th)}else if(t.dataset.lk){likePost(+t.dataset.lk)}else if(t.dataset.cm){addComment(+t.dataset.cm)}else if(t.dataset.act){act(t.dataset.act)}else if(t.dataset.cv){cvIdx=+t.dataset.cv;$('cvfile').click()}else if(t.dataset.p){playTrack(+t.dataset.p);return}else if(0){var on=t.getAttribute('aria-pressed')!=='true';document.querySelectorAll('[data-p]').forEach(function(x){x.setAttribute('aria-pressed','false');x.textContent='▶'});if(on){t.setAttribute('aria-pressed','true');t.textContent='⏸'}}
+ else if(t.classList.contains('like')){var l=t.getAttribute('aria-pressed')!=='true';t.setAttribute('aria-pressed',l);t.textContent=l?'♥':'♡'}
+});
+$('q').addEventListener('input',function(e){query=e.target.value;show('books');render()});
+$('add').addEventListener('click',function(){if(curView!=='books'){openPost();return}
+ var t=prompt('Título do livro:');if(!t||!t.trim())return;
+ var a=prompt('Autor(a):')||'Autoria não informada';
+ books.unshift({t:t.trim(),a:a.trim(),g:'Romance',k:['#8b3fc7','#2e0a4f'],read:false,stars:0});
+ show('books');render();
+});
+$('theme').addEventListener('click',function(){
+ var r=document.documentElement,dark=getComputedStyle(r).getPropertyValue('--bg').trim()==='#2a1647';
+ r.setAttribute('data-theme',dark?'light':'dark');
+});
+function enter(){$('splash').classList.add('off')}
+$('enter').addEventListener('click',enter);
+setTimeout(enter,3500);
+var tracks=[{n:'Chuva na janela',e:'🌧️',k:'rain'},{n:'Lareira crepitando',e:'🔥',k:'fire'},{n:'Piano lo-fi para ler',e:'🎹',k:'piano'},{n:'Biblioteca à meia-noite',e:'🌙',k:'pad'}];
+var AC,cur=-1,stopFn=null,cvIdx=0;
+function ctx(){if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();return AC}
+function noise(a,type){var n=a.sampleRate*2,b=a.createBuffer(1,n,a.sampleRate),d=b.getChannelData(0),l=0;for(var i=0;i<n;i++){var w=Math.random()*2-1;if(type==='brown'){l=(l+0.02*w)/1.02;d[i]=l*3.5}else d[i]=w}var s=a.createBufferSource();s.buffer=b;s.loop=true;return s}
+var synth={
+ rain:function(a,out){var s=noise(a,'white'),hp=a.createBiquadFilter(),lp=a.createBiquadFilter(),g=a.createGain(),s2=noise(a,'brown'),g2=a.createGain();hp.type='highpass';hp.frequency.value=900;lp.type='lowpass';lp.frequency.value=7000;g.gain.value=.3;g2.gain.value=.5;s.connect(hp);hp.connect(lp);lp.connect(g);g.connect(out);s2.connect(g2);g2.connect(out);s.start();s2.start();return function(){s.stop();s2.stop()}},
+ fire:function(a,out){var s=noise(a,'brown'),lp=a.createBiquadFilter(),g=a.createGain(),on=true;lp.type='lowpass';lp.frequency.value=500;g.gain.value=.9;s.connect(lp);lp.connect(g);g.connect(out);s.start();
+  function crack(){var o=a.createBufferSource(),n=Math.floor(a.sampleRate*.03),b=a.createBuffer(1,n,a.sampleRate),d=b.getChannelData(0);for(var i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/n,3);o.buffer=b;var f=a.createBiquadFilter();f.type='bandpass';f.frequency.value=1500+Math.random()*3000;var gg=a.createGain();gg.gain.value=.3+Math.random()*.6;o.connect(f);f.connect(gg);gg.connect(out);o.start()}
+  (function tick(){if(!on)return;crack();setTimeout(tick,40+Math.random()*350)})();
+  return function(){on=false;s.stop()}},
+ piano:function(a,out){var ch=[[220,261.63,329.63],[174.61,220,261.63],[130.81,196,261.63],[196,246.94,293.66]],i=0,on=true;
+  function note(f,t,d){var o=a.createOscillator(),o2=a.createOscillator(),g=a.createGain();o.type='triangle';o2.type='sine';o.frequency.value=f;o2.frequency.value=f*2;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.18,t+.02);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);o2.connect(g);g.connect(out);o.start(t);o2.start(t);o.stop(t+d);o2.stop(t+d)}
+  function bar(){if(!on)return;var t=a.currentTime+.05,c=ch[i++%4];c.forEach(function(f,k){note(f,t+k*.45,2.6)});note(c[0]/2,t,3);note(c[2]*2,t+1.8,1.8);setTimeout(bar,3600)}
+  bar();return function(){on=false}},
+ pad:function(a,out){var fs=[110,164.81,196,246.94],os=[],lp=a.createBiquadFilter(),g=a.createGain(),lfo=a.createOscillator(),lg=a.createGain();lp.type='lowpass';lp.frequency.value=700;g.gain.value=.1;lfo.frequency.value=.12;lg.gain.value=300;lfo.connect(lg);lg.connect(lp.frequency);lfo.start();
+  fs.forEach(function(f){[-4,4].forEach(function(d){var o=a.createOscillator();o.type='sawtooth';o.frequency.value=f;o.detune.value=d;o.connect(lp);o.start();os.push(o)})});lp.connect(g);g.connect(out);
+  return function(){os.forEach(function(o){o.stop()});lfo.stop()}}
+};
+function renderTracks(){$('tracks').innerHTML=tracks.map(function(t,i){var on=cur===i;return '<div class="track"><div class="cover" style="background:var(--panel);font-size:1.5rem;align-items:center;justify-content:center">'+ICO[TI[t.k]]+'</div><b>'+esc(t.n)+'</b><button class="play" data-p="'+i+'" aria-label="'+(on?'Pausar ':'Tocar ')+esc(t.n)+'" aria-pressed="'+on+'">'+(on?ICO.pause:ICO.play)+'</button></div>'}).join('')}
+function stopAll(){if(stopFn){try{stopFn()}catch(e){}}stopFn=null;cur=-1;renderTracks()}
+function playTrack(i){var same=cur===i;stopAll();if(same)return;var t=tracks[i];cur=i;
+ if(t.k==='file'){t.audio.currentTime=0;t.audio.play();stopFn=function(){t.audio.pause()}}
+ else{var a=ctx(),m=a.createGain();m.gain.value=.8;m.connect(a.destination);var st=synth[t.k](a,m);stopFn=function(){st();m.disconnect()}}
+ renderTracks()}
+$('addmusic').addEventListener('click',function(){$('musicfile').click()});
+$('musicfile').addEventListener('change',function(e){var f=e.target.files[0];if(!f)return;var au=new Audio(URL.createObjectURL(f));au.loop=true;tracks.push({n:f.name.replace(/\.[^.]+$/,''),e:'🎧',k:'file',audio:au});renderTracks();e.target.value=''});
+$('cvfile').addEventListener('change',function(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(){books[cvIdx].img=r.result;render()};r.readAsDataURL(f);e.target.value=''});
+var me={name:'Seu nome',user:'seu.nome',bio:'Leitora de fantasia e romance. Conto aqui o que estou lendo.',av:null,hd:null};
+var ppl=[{n:'Mari Lopes',u:'mari.le',e:'🌸',c:'#c9708b'},{n:'Duda Reis',u:'duda.reads',e:'🦉',c:'#3b5a7a'},{n:'Lu Andrade',u:'lu.paginas',e:'🕯️',c:'#c28a2c'},{n:'Bia Torres',u:'bia.booktok',e:'✨',c:'#6a3fa0'},{n:'Caio Matos',u:'caio.le',e:'🌙',c:'#3c7a5a'}];
+var feed=[
+{w:0,b:'É Assim que Acaba',t:'Cheguei na página 220 e já estou com o coração apertado. Quem já leu me avisa se melhora?',img:null,l:14,liked:false,cm:[{w:1,t:'Não melhora, mas é lindo. Vale cada página.'},{w:3,t:'Já deixei o lenço separado pra você.'}]},
+{w:1,b:'Quarta Asa',t:'Maratonei até as 3 da manhã. A Violet virou minha personagem favorita.',img:null,l:32,liked:false,cm:[{w:4,t:'Cinco estrelas confirmadas?'},{w:2,t:'Preciso começar hoje.'}]},
+{w:2,b:'A Corte de Espinhos e Rosas',t:'Li no ônibus de novo e perdi o ponto. Ninguém me avisou que era tão bom.',img:null,l:21,liked:false,cm:[{w:0,t:'Espera até chegar no segundo livro!'}]},
+{w:3,b:'Os Sete Maridos de Evelyn Hugo',t:'Quem mais ficou pensando no final por dias?',img:null,l:48,liked:false,cm:[{w:1,t:'Eu. Ainda não superei.'},{w:4,t:'Esse livro mudou meu mês.'}]},
+{w:4,b:'A Biblioteca da Meia-Noite',t:'Leitura de domingo com café. Recomendo para dias difíceis.',img:null,l:9,liked:false,cm:[]},
+{w:0,b:'Heartstopper',t:'Releitura aconchegante para fechar a semana.',img:null,l:17,liked:false,cm:[{w:3,t:'Pura paz.'}]}
+];
+function bk(t){return books.filter(function(b){return b.t===t})[0]||{k:['#8b3fc7','#2e0a4f'],a:''}}
+function who(w){return w<0?{n:me.name,u:me.user,e:'📖',c:'#8b3fc7',img:me.av}:ppl[w]}
+function av(p,s){return `<div class='avatar' style='${p.img?'background:url('+p.img+') center/cover':'background:'+p.c};width:${s}px;height:${s}px;font-size:${Math.round(s*.4)}px;font-weight:600;color:#fff'>${p.img?'':esc((p.n||me.name||'?').trim().charAt(0).toUpperCase())}</div>`}
+function bg(p){var b=bk(p.b);return p.img?`background:url(${p.img}) center/cover`:`background:linear-gradient(160deg,${b.k[0]},${b.k[1]})`}
+function postHTML(p,i){var w=who(p.w),b=bk(p.b);return `<article class='pcard'><header class='phd'>${av(w,40)}<div><b>${esc(w.n)}</b><br><small>lendo ${esc(p.b)}</small></div></header><div class='pimg' style='${bg(p)}'>${p.img?'':'<span>'+esc(p.b)+'<small>'+esc(b.a)+'</small></span>'}</div><div class='pact'><button class='like' data-lk='${i}' aria-pressed='${p.liked}' aria-label='Curtir'>${heart(p.liked)}</button><span>${p.l} curtidas</span></div><p class='ptxt'><b>${esc(w.u)}</b> ${esc(p.t)}</p><ul class='cms'>${p.cm.map(function(c){return '<li><b>'+esc(who(c.w).u)+'</b> '+esc(c.t)+'</li>'}).join('')}</ul><div class='cin'><input placeholder='Comentar...' aria-label='Comentar' data-ci='${i}'><button class='btn' data-cm='${i}'>Enviar</button></div></article>`}
+function renderFeed(){$('feed').innerHTML=feed.map(postHTML).join('');$('stories').innerHTML=[{n:'Você',img:me.av,e:'📖',c:'#8b3fc7'}].concat(ppl).map(function(p){return av(p,48).replace("class='avatar'","class='avatar' title='"+esc(p.n)+"'")}).join('')}
+function renderProfile(){var mine=[];feed.forEach(function(p,i){if(p.w<0)mine.push(p)});var lidos=books.filter(function(b){return b.read}).length;
+$('profile').innerHTML=`<div class='phead' style='${me.hd?'background:url('+me.hd+') center/cover':''}'></div><div class='pbar'>${av({img:me.av,e:'📖',c:'#8b3fc7'},88)}<div class='pn'><h2>${esc(me.name)}</h2><small>@${esc(me.user)}</small></div><button class='btn' data-act='editp'>Editar perfil</button><button class='btn' data-act='conf'>Configurações</button><button class='btn pub' data-act='newp'>Novo post</button></div><p class='bio'>${esc(me.bio)}</p><p><b>${mine.length}</b> posts &nbsp; <b>${lidos}</b> livros lidos</p>${mine.length?'<div class="pgrid">'+mine.map(function(p){return "<div class='tl' style='"+bg(p)+"'>"+(p.img?'':esc(p.b))+"</div>"}).join('')+'</div>':'<p class="empty">Você ainda não fez nenhum post. Conte o que está lendo.</p>'}`}
+function renderSide(){var me2=document.querySelector('.right .me');me2.innerHTML=av({img:me.av,e:'📖',c:'#8b3fc7'},64)+'<div>@'+esc(me.user)+'</div>';$('myposts').innerHTML=feed.filter(function(p){return p.w<0}).slice(0,2).map(function(p){return "<div class='post' style='"+bg(p)+"'>"+(p.img?'':esc(p.b))+"</div>"}).join('')||'<p class="empty">Seus posts aparecem aqui.</p>'}
+function renderAll(){renderFeed();renderProfile();renderSide();render()}
+function likePost(i){var p=feed[i];p.liked=!p.liked;p.l+=p.liked?1:-1;renderAll()}
+function addComment(i){var inp=document.querySelector("[data-ci='"+i+"']"),v=inp&&inp.value.trim();if(!v)return;feed[i].cm.push({w:-1,t:v});renderAll()}
+document.addEventListener('keydown',function(e){if(e.key==='Enter'&&e.target.dataset&&e.target.dataset.ci)addComment(+e.target.dataset.ci)});
+function readF(inp,cb){var f=inp.files[0];if(!f){cb(null);return}var r=new FileReader();r.onload=function(){cb(r.result)};r.readAsDataURL(f)}
+function openPost(){$('pb').innerHTML=books.map(function(b){return '<option>'+esc(b.t)+'</option>'}).join('');$('pt').value='';$('pi').value='';$('dlg').showModal()}
+function openEdit(){$('en').value=me.name;$('eu').value=me.user;$('eb').value=me.bio;$('ea').value='';$('eh').value='';$('dlg2').showModal()}
+function act(a){if(a==='editp')openEdit();else if(a==='conf')show('conf');else openPost()}
+$('pc').onclick=function(){$('dlg').close()};$('ec').onclick=function(){$('dlg2').close()};
+$('pp').onclick=function(){var t=$('pt').value.trim();readF($('pi'),function(img){if(!t&&!img){$('pt').focus();return}feed.unshift({w:-1,b:$('pb').value,t:t,img:img,l:0,liked:false,cm:[]});$('dlg').close();renderAll();show('home')})};
+$('es').onclick=function(){me.name=$('en').value.trim()||me.name;me.user=$('eu').value.trim().replace(/^@/,'')||me.user;me.bio=$('eb').value.trim();readF($('ea'),function(a){if(a)me.av=a;readF($('eh'),function(h){if(h)me.hd=h;$('dlg2').close();renderAll()})})};
+views=[['home','Início','🏠'],['books','Livros','📘'],['minhas','Estante','📚'],['play','Playlist','🎵'],['feed','Perfil','👤'],['conf','Config','⚙️']];
+function ic(p,f){return `<svg viewBox='0 0 24 24' fill='${f?'currentColor':'none'}' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'>${p}</svg>`}
+var ICO={home:ic("<path d='M3 11l9-8 9 8'/><path d='M5 10v10h14V10'/>"),books:ic("<path d='M4 19V5a2 2 0 0 1 2-2h13v14H6a2 2 0 0 0-2 2zm0 0a2 2 0 0 0 2 2h13'/>"),shelf:ic("<path d='M6 3h12v18l-6-4-6 4z'/>"),music:ic("<path d='M9 18V5l11-2v13'/><circle cx='6' cy='18' r='3'/><circle cx='17' cy='16' r='3'/>"),user:ic("<circle cx='12' cy='8' r='4'/><path d='M4 21a8 8 0 0 1 16 0'/>"),cog:ic("<circle cx='12' cy='12' r='3'/><path d='M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1'/>"),search:ic("<circle cx='11' cy='11' r='7'/><path d='M20 20l-3.5-3.5'/>"),play:ic("<path d='M7 4l13 8-13 8z'/>",1),pause:ic("<path d='M7 4h4v16H7zM13 4h4v16h-4z'/>",1),rain:ic("<path d='M7 16a5 5 0 1 1 1-9.9A6 6 0 0 1 19 9a4 4 0 0 1-1 7'/><path d='M8 19l-1 2M12 19l-1 2M16 19l-1 2'/>"),flame:ic("<path d='M12 3c1 4 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-5 1-9z'/>"),keys:ic("<rect x='3' y='5' width='18' height='14' rx='2'/><path d='M9 5v14M15 5v14M7 5v8M12 5v8M17 5v8'/>"),moon:ic("<path d='M20 14A8 8 0 0 1 10 4a8 8 0 1 0 10 10z'/>"),phones:ic("<path d='M4 15v-3a8 8 0 0 1 16 0v3'/><rect x='3' y='14' width='4' height='6' rx='1.5'/><rect x='17' y='14' width='4' height='6' rx='1.5'/>"),logo:ic("<path d='M20 14A8 8 0 0 1 10 4a8 8 0 1 0 10 10z'/><path d='M17 3v4M15 5h4'/>")};
+var TI={rain:'rain',fire:'flame',piano:'keys',pad:'moon',file:'phones'};
+function heart(f){return ic("<path d='M12 21s-8-5.5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.5-8 11-8 11z'/>",f)}
+var THEMES=[['lilas','Lilás','#8b3fc7','#e9d5fb'],['dark','Escuro','#a45be0','#2a1647'],['clean','Clean','#1c1c1e','#f6f6f7'],['girlie','Girlie','#e6428b','#ffe3ef'],['floresta','Floresta','#2f7a4a','#e2efe3'],['oceano','Oceano','#1f78c1','#def0fb'],['cafe','Café','#8a5a34','#efe3d3'],['auto','Automático','#2a1647','#f6f6f7']];
+function renderThemes(){var cur=document.documentElement.getAttribute('data-theme');$('themes').innerHTML=THEMES.map(function(t){return `<button class='sw' data-th='${t[0]}' aria-pressed='${cur===t[0]}'><i style='background:linear-gradient(135deg,${t[3]} 50%,${t[2]} 50%)'></i>${t[1]}</button>`}).join('')}
+function setTheme(t){document.documentElement.setAttribute('data-theme',t);try{localStorage.setItem('ppm-theme',t)}catch(e){}renderThemes()}
+var TH='lilas';try{TH=localStorage.getItem('ppm-theme')||'lilas'}catch(e){}
+document.documentElement.setAttribute('data-theme',TH);
+document.querySelector('.logo').innerHTML=ICO.logo;document.querySelector('.search span').innerHTML=ICO.search;$('theme').style.display='none';
+views=[['home','Início',ICO.home],['books','Livros',ICO.books],['minhas','Estante',ICO.shelf],['play','Playlist',ICO.music],['feed','Perfil',ICO.user],['conf','Config',ICO.cog]];
+var QT=[['Só se vê bem com o coração.','Antoine de Saint-Exupéry','O Pequeno Príncipe'],['Toda a sabedoria humana está em duas palavras: esperar e ter esperança.','Alexandre Dumas','O Conde de Monte Cristo'],['Eu não sou uma ave, e nenhuma rede me prende.','Charlotte Brontë','Jane Eyre'],['Há mais coisas entre o céu e a terra do que sonha a nossa filosofia.','William Shakespeare','Hamlet'],['Às vezes acredito em até seis coisas impossíveis antes do café da manhã.','Lewis Carroll','Alice no País das Maravilhas'],['Ao vencedor, as batatas.','Machado de Assis','Quincas Borba'],['Você enfeitiçou meu corpo e minha alma.','Jane Austen','Orgulho e Preconceito'],['Aqui todos somos loucos.','Lewis Carroll','Alice no País das Maravilhas']];
+var qi=0,qtm,RM=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+function showQ(n){qi=(n+QT.length)%QT.length;var b=$('qt');b.style.opacity=0;setTimeout(function(){var q=QT[qi];b.innerHTML=`<p>${esc(q[0])}</p><cite>${esc(q[1])}, ${esc(q[2])}</cite>`;b.style.opacity=1},RM?0:250)}
+function startQ(){clearInterval(qtm);if(!RM)qtm=setInterval(function(){showQ(qi+1)},9000)}
+$('qnext').innerHTML=ic("<path d='M9 6l6 6-6 6'/>");$('qnext').addEventListener('click',function(){showQ(qi+1);startQ()});
+showQ(Math.floor(Math.random()*QT.length));startQ();
+nav();renderTracks();renderAll();renderThemes();show('home');
+</script>
+</body>
+</html>
