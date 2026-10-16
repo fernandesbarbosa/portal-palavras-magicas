@@ -133,6 +133,14 @@ dialog input,dialog select,dialog textarea{display:block;width:100%;margin-top:.
 .lock{display:inline-grid;vertical-align:middle;margin-left:.35rem;color:var(--mute)}.lock svg{width:.85em;height:.85em}
 .logo{background:var(--deep);color:#c79bff;overflow:hidden}.logo g{stroke:currentColor}.logo circle{fill:#6a2fb0}.logo svg>path{fill:#e8d0ff}.logo img{width:100%;height:100%;object-fit:cover;display:block}
 .logo g{stroke:color-mix(in srgb,var(--brand) 40%,#fff)}.logo circle{fill:color-mix(in srgb,var(--brand) 85%,#fff)}.logo svg>path{fill:rgba(255,255,255,.92)}.logo{transition:background .3s}
+@supports (height:100dvh){html,body{height:100dvh}}
+.grid{grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr))}
+dialog{max-height:90dvh;overflow:auto}
+.acc{display:flex;flex-direction:column;gap:.6rem;align-items:center;margin-top:.5rem}.splash .go.alt{background:transparent;color:#e8d0ff;border:1px solid #e8d0ff}
+@media (max-width:1100px){.app{grid-template-columns:200px 1fr}.right{display:none}}
+@media (max-width:860px){.app{display:block}.main{padding:.8rem 1rem 6rem}.top{flex-wrap:wrap}.search{max-width:none;flex-basis:100%}.btn{white-space:nowrap}.top .btn{margin-left:auto}.qb{padding:1.1rem 3.4rem 1.1rem 1.2rem}.phead{height:110px}.feed,.cfg{max-width:none}.row{flex-wrap:wrap}.themes{grid-template-columns:repeat(2,1fr)}.bottom .nav{padding:.3rem .5rem}.chip{padding:.35rem .9rem}input,select,textarea{font-size:16px}.splash .go{max-width:100%}}
+@media (max-width:380px){.main{padding-left:.7rem;padding-right:.7rem}.bottom .nav{font-size:.68rem}.pcard .phd{padding:.6rem .7rem}}
+.err{color:#c0392b;font-size:.85rem;min-height:1.2em;margin:.4rem 0 0}dialog label[hidden]{display:none}
 </style>
 </head>
 <body>
@@ -305,8 +313,8 @@ $('theme').addEventListener('click',function(){
  r.setAttribute('data-theme',dark?'light':'dark');
 });
 function enter(){$('splash').classList.add('off')}
-$('enter').addEventListener('click',enter);
-setTimeout(enter,3500);
+$('enter').addEventListener('click',function(){openChoose()});
+
 var tracks=[{n:'Chuva na janela',e:'🌧️',k:'rain'},{n:'Lareira crepitando',e:'🔥',k:'fire'},{n:'Piano lo-fi para ler',e:'🎹',k:'piano'},{n:'Biblioteca à meia-noite',e:'🌙',k:'pad'}];
 var AC,cur=-1,stopFn=null,cvIdx=0;
 function ctx(){if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();return AC}
@@ -403,7 +411,7 @@ function fillList(){var k=listK,ar=ppl.map(function(p,i){return {p:p,i:i}}).filt
 function openList(k){listK=k;fillList();$('dlg3').showModal()}
 function applyS(){var r=document.documentElement;r.style.fontSize={s:'14px',m:'16px',l:'18px'}[S.font]||'16px';r.classList.toggle('calm',!!S.calm);document.querySelectorAll('[data-sg]').forEach(function(i){var k=i.dataset.sg;if(i.type==='checkbox')i.checked=!!S[k];else i.value=S[k]});applyLogo();startQ()}
 var LG0;function applyLogo(){document.querySelectorAll('.wm').forEach(function(x){x.remove()});var l=document.querySelector('.logo');if(LG0===undefined)LG0=l.innerHTML;l.innerHTML=0?`<img src='${S.logo}' alt='Logo'>`:LG0}
-function cfgAct(a){if(a==='logout'){$('splash').classList.remove('off');$('enter').focus()}else if(a==='reset'){if(confirm('Apagar posts, estante, capas e ajustes salvos neste aparelho?')){try{localStorage.removeItem(KEY);localStorage.removeItem('ppm-theme')}catch(e){}location.reload()}}else if(a==='bulk')$('bulk').click();else if(a==='logo')$('logof').click();else if(a==='logo0'){S.logo='';applyS();save()}else if(a==='edit')openEdit()}
+function cfgAct(a){if(a==='logout'){logout()}else if(a==='reset'){if(confirm('Apagar posts, estante, capas e ajustes salvos neste aparelho?')){try{localStorage.removeItem(KEY);localStorage.removeItem('ppm-theme')}catch(e){}location.reload()}}else if(a==='bulk')$('bulk').click();else if(a==='logo')$('logof').click();else if(a==='logo0'){S.logo='';applyS();save()}else if(a==='edit')openEdit()}
 function norm(s){return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'')}
 $('v-minhas').innerHTML=`<h2>Minha estante</h2><div class='goal' id='goal'></div><div class='chips' id='shchips'></div><div class='grid' id='mine'></div><p class='empty' id='mine-none' hidden></p>`;
 $('v-conf').innerHTML=`<h2>Configurações</h2><section class='cfg'><h3>Aparência</h3><div id='themes' class='themes' aria-label='Escolha o tema'></div><label class='row'><span>Tamanho do texto</span><select data-sg='font'><option value='s'>Pequeno</option><option value='m'>Médio</option><option value='l'>Grande</option></select></label><label class='row'><span>Reduzir animações</span><input type='checkbox' data-sg='calm'></label><label class='row'><span>Trocar as frases de Livros sozinhas</span><input type='checkbox' data-sg='rot'></label></section><section class='cfg'><h3>Leitura</h3><label class='row'><span>Meta de livros para 2026</span><input type='number' class='num' min='0' max='999' data-sg='goal'></label><div class='row'><span>Capas dos livros<small>Envie várias imagens de uma vez, nomeadas com o título do livro.</small></span><button class='btn' data-cfg='bulk'>Importar capas</button></div><p class='empty' id='bulkmsg'></p></section><section class='cfg'><h3>Privacidade</h3><label class='row'><span>Perfil privado<small>Mostra um cadeado ao lado do seu nome.</small></span><input type='checkbox' data-sg='priv'></label><label class='row'><span>Mostrar o que estou lendo no perfil</span><input type='checkbox' data-sg='showShelf'></label></section><section class='cfg'><h3>Notificações</h3><label class='row'><span>Curtidas nos meus posts</span><input type='checkbox' data-sg='nLike'></label><label class='row'><span>Comentários</span><input type='checkbox' data-sg='nCom'></label><label class='row'><span>Novos seguidores</span><input type='checkbox' data-sg='nFol'></label></section><section class='cfg'><h3>Conta</h3><div class='row'><span>Nome, foto, capa e bio</span><button class='btn' data-cfg='edit'>Editar perfil</button></div><div class='row'><span>Apagar dados salvos<small>Remove posts, estante, capas e ajustes deste aparelho.</small></span><button class='btn' data-cfg='reset'>Apagar</button></div><div class='row'><span>Voltar para a página inicial do Portal Palavras Mágicas</span><button class='btn danger' data-cfg='logout'>Sair</button></div></section><p class='empty'>Portal Palavras Mágicas · abra a porta para novos mundos</p>`;
@@ -415,6 +423,45 @@ document.addEventListener('click',function(e){var t=e.target.closest('button');i
 document.addEventListener('change',function(e){var s=e.target,d=s.dataset||{};if(d.s!==undefined){var b=books[+d.s];b.st=s.value;if(b.st!=='lido')b.stars=0;renderAll()}else if(d.sg){S[d.sg]=s.type==='checkbox'?s.checked:(s.type==='number'?Math.max(0,+s.value||0):s.value);applyS();renderAll()}else if(s.id==='cvfile')setTimeout(save,800)});
 $('bulk').addEventListener('change',function(e){var fs=[].slice.call(e.target.files),ok=0,left=fs.length;if(!left)return;fs.forEach(function(f){var n=norm(f.name.replace(/\.[^.]+$/,'')),b=books.filter(function(x){var t=norm(x.t);return t===n||(n.length>3&&(t.indexOf(n)>-1||n.indexOf(t)>-1))})[0];var r=new FileReader();r.onload=function(){if(b){b.img=r.result;ok++}if(--left===0){$('bulkmsg').textContent=ok+' de '+fs.length+' capas encontraram um livro pelo nome do arquivo.';renderAll()}};r.readAsDataURL(f)});e.target.value=''});
 $('logof').addEventListener('change',function(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(){S.logo=r.result;applyS();save()};r.readAsDataURL(f);e.target.value=''});
+var ACC=null,CUR='a1';try{ACC=JSON.parse(localStorage.getItem('ppm-acc')||'null')}catch(e){}
+if(!ACC||!ACC.list||!ACC.list.length)ACC={list:[{id:'a1'}],cur:'a1'};
+CUR=ACC.cur||'a1';
+function keyFor(id){return id==='a1'?'ppm-v2':'ppm-v2-'+id}
+KEY=keyFor(CUR);
+var ME0=JSON.stringify(me),BOOKS0=JSON.stringify(books),FEED0=JSON.stringify(feed),SD=JSON.stringify(S);
+function save(){try{localStorage.setItem(KEY,JSON.stringify({me:me,books:books,feed:feed,fl:ppl.map(function(p){return [p.f,p.fb]}),S:S}))}catch(e){}try{var a=ACC.list.filter(function(x){return x.id===CUR})[0];if(a){a.n=me.name;a.u=me.user}ACC.cur=CUR;localStorage.setItem('ppm-acc',JSON.stringify(ACC))}catch(e){}}
+function resetState(){me=JSON.parse(ME0);books=JSON.parse(BOOKS0);feed=JSON.parse(FEED0);ppl.forEach(function(p){p.f=false;p.fb=false});S=JSON.parse(SD)}
+function enterApp(){applyS();renderAll();show('home');$('splash').classList.add('off');$('enter').style.display=''}
+function switchAcc(id){save();CUR=id;ACC.cur=id;KEY=keyFor(id);resetState();load();enterApp()}
+function renderAcc(){$('acc').innerHTML=ACC.list.map(function(a){return `<button class='go' data-acc='${a.id}'>Entrar como ${esc(a.n||'Seu nome')} (@${esc(a.u||'seu.nome')})</button>`}).join('')+`<button class='go alt' data-acc='new'>Criar nova conta</button>`}
+function logout(){save();$('enter').style.display='none';renderAcc();$('splash').classList.remove('off');var f=$('acc').querySelector('button');if(f)f.focus()}
+function openNew(){$('nn').value='';$('nu').value='';$('nb').value='';$('dlg4').showModal();$('nn').focus()}
+$('enter').insertAdjacentHTML('afterend',`<div id='acc' class='acc'></div>`);
+document.body.insertAdjacentHTML('beforeend',`<dialog id='dlg4' aria-label='Nova conta'><h2>Criar nova conta</h2><label>Nome<input id='nn' maxlength='40'></label><label>Usuário<input id='nu' maxlength='30' autocomplete='username'></label><label>Senha (mínimo 6 caracteres)<input id='np' type='password' autocomplete='new-password'></label><label>Confirmar senha<input id='np2' type='password' autocomplete='new-password'></label><label>Bio (opcional)<textarea id='nb' rows='2' maxlength='160'></textarea></label><p id='nerr' class='err' role='alert'></p><div class='dact'><button class='btn' id='nc'>Cancelar</button><button class='btn pub' id='ns'>Criar conta</button></div></dialog>`);
+$('nc').onclick=function(){$('dlg4').close()};
+$('ns').onclick=function(){var n=$('nn').value.trim(),u=$('nu').value.trim().replace(/^@/,'');if(!n){$('nn').focus();return}save();var id='a'+Date.now(),us=u||n.toLowerCase().replace(/[^a-z0-9]/g,'.');ACC.list.push({id:id,n:n,u:us});ACC.cur=id;CUR=id;KEY=keyFor(id);resetState();me.name=n;me.user=us;me.bio=$('nb').value.trim()||'Novo por aqui. Conto o que estou lendo.';$('dlg4').close();enterApp()};
+document.addEventListener('click',function(e){var t=e.target.closest('button');if(!t||!t.dataset.acc)return;if(t.dataset.acc==='new')openNew();else openLogin()});
+function renderAcc(){var L=ACC.list.slice().sort(function(a,b){return (b.id===CUR)-(a.id===CUR)});$('chlist').innerHTML=L.map(function(a){return `<button class='go' data-acc='${a.id}'>Entrar como ${esc(a.n||'Seu nome')} (@${esc(a.u||'seu.nome')})</button>`}).join('')+`<button class='go alt' data-acc='new'>Criar nova conta</button>`}
+function openChoose(){renderAcc();$('choose').classList.remove('off');var f=$('chlist').querySelector('button');if(f)f.focus()}
+function enterApp(){applyS();renderAll();show('home');$('splash').classList.add('off');$('choose').classList.add('off');$('enter').style.display=''}
+function logout(){save();$('enter').style.display='';$('choose').classList.add('off');$('splash').classList.remove('off');$('enter').focus()}
+document.body.insertAdjacentHTML('beforeend',`<div class='splash off' id='choose' style='z-index:51' role='dialog' aria-label='Entrar'><h1>Entrar</h1><p>Escolha como você quer continuar</p><div id='chlist' class='acc'></div><button class='go alt' id='chback'>Voltar</button></div>`);
+$('chback').onclick=function(){$('choose').classList.add('off');$('enter').focus()};
+function renderAcc(){$('chlist').innerHTML=`<button class='go' data-acc='old'>Entrar com uma conta antiga</button><button class='go alt' data-acc='new'>Criar nova conta</button>`}
+function salt(){var a=new Uint8Array(8);if(window.crypto&&crypto.getRandomValues)crypto.getRandomValues(a);else for(var i=0;i<8;i++)a[i]=Math.random()*256;return Array.prototype.map.call(a,function(b){return b.toString(16).padStart(2,'0')}).join('')}
+function hash(p,s){var t=s+p;if(window.crypto&&crypto.subtle)return crypto.subtle.digest('SHA-256',new TextEncoder().encode(t)).then(function(b){return Array.prototype.map.call(new Uint8Array(b),function(x){return x.toString(16).padStart(2,'0')}).join('')});return Promise.resolve('b'+btoa(unescape(encodeURIComponent(t))))}
+var pendNew=false;
+function lerr(m){$('lerr').textContent=m}
+function openLogin(){$('lu').value='';$('lp').value='';$('lnew').value='';$('lnl').hidden=true;pendNew=false;lerr('');$('dlg5').showModal();$('lu').focus()}
+function doLogin(){var u=$('lu').value.trim().replace(/^@/,'').toLowerCase(),a=ACC.list.filter(function(x){return (x.u||'').toLowerCase()===u})[0];if(!a){lerr('Usuário ou senha incorretos.');return}
+if(!a.ph){if(!pendNew){pendNew=true;$('lnl').hidden=false;lerr('Essa conta ainda não tem senha. Crie uma senha para continuar.');$('lnew').focus();return}var np=$('lnew').value;if(np.length<6){lerr('A senha precisa ter pelo menos 6 caracteres.');return}var s=salt();hash(np,s).then(function(h){a.s=s;a.ph=h;save();$('dlg5').close();switchAcc(a.id)});return}
+hash($('lp').value,a.s).then(function(h){if(h===a.ph){$('dlg5').close();switchAcc(a.id)}else lerr('Usuário ou senha incorretos.')})}
+function openNew(){['nn','nu','nb','np','np2'].forEach(function(i){$(i).value=''});$('nerr').textContent='';$('dlg4').showModal();$('nn').focus()}
+document.body.insertAdjacentHTML('beforeend',`<dialog id='dlg5' aria-label='Entrar na conta'><h2>Entrar na conta</h2><label>Usuário<input id='lu' autocomplete='username' maxlength='30'></label><label>Senha<input id='lp' type='password' autocomplete='current-password'></label><label id='lnl' hidden>Crie uma senha (mínimo 6 caracteres)<input id='lnew' type='password' autocomplete='new-password'></label><p id='lerr' class='err' role='alert'></p><div class='dact'><button class='btn' id='lc'>Cancelar</button><button class='btn pub' id='ls'>Entrar</button></div></dialog>`);
+$('ls').onclick=doLogin;$('lc').onclick=function(){$('dlg5').close()};
+$('ns').onclick=function(){var n=$('nn').value.trim(),u=$('nu').value.trim().replace(/^@/,''),p=$('np').value,e=$('nerr');if(!n||!u){e.textContent='Preencha nome e usuário.';return}if(ACC.list.some(function(a){return (a.u||'').toLowerCase()===u.toLowerCase()})){e.textContent='Esse usuário já existe. Escolha outro.';return}if(p.length<6){e.textContent='A senha precisa ter pelo menos 6 caracteres.';return}if(p!==$('np2').value){e.textContent='As senhas não conferem.';return}save();var id='a'+Date.now(),s=salt();hash(p,s).then(function(h){ACC.list.push({id:id,n:n,u:u,s:s,ph:h});ACC.cur=id;CUR=id;KEY=keyFor(id);resetState();me.name=n;me.user=u;me.bio=$('nb').value.trim()||'Novo por aqui. Conto o que estou lendo.';$('dlg4').close();enterApp()})};
+['lu','lp','lnew'].forEach(function(i){$(i).addEventListener('keydown',function(e){if(e.key==='Enter')doLogin()})});
+['nn','nu','np','np2'].forEach(function(i){$(i).addEventListener('keydown',function(e){if(e.key==='Enter')$('ns').click()})});
 load();applyS();
 nav();renderTracks();renderAll();renderThemes();show('home');
 </script>
